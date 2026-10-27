@@ -1,0 +1,111 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="part1" name="Part 1 - Transactions">
+    <mxGraphModel dx="1200" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="t" value="Part 1 – Transaction Management" style="text;html=1;fontSize=24;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1000" height="40" as="geometry" />
+        </mxCell>
+
+        <mxCell id="scn" value="&lt;b&gt;Scenario&lt;/b&gt;&lt;br&gt;Account A = 1000 DT&lt;br&gt;T1: transfer 200 DT from A → B&lt;br&gt;T2: transfer 300 DT from A → C&lt;br&gt;Both start at the same time." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=left;spacingLeft=10;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="480" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="iss" value="&lt;b&gt;1) Concurrency issue: LOST UPDATE&lt;/b&gt;&lt;br&gt;Both transactions read A = 1000 before either writes.&lt;br&gt;T2 overwrites T1's result → final A = 700&lt;br&gt;instead of 500 (200 DT disappears)." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;align=left;spacingLeft=10;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="560" y="80" width="480" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="unsafe" value="&lt;b style='font-size:14px;color:#b85450'&gt;UNSAFE schedule (no locks) ❌&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;table border='1' cellpadding='5' style='border-collapse:collapse;width:100%'&gt;&lt;tr style='background:#eeeeee'&gt;&lt;th&gt;Time&lt;/th&gt;&lt;th&gt;T1&lt;/th&gt;&lt;th&gt;T2&lt;/th&gt;&lt;th&gt;A&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;t1&lt;/td&gt;&lt;td&gt;Read(A) = 1000&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;1000&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;t2&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;Read(A) = 1000&lt;/td&gt;&lt;td&gt;1000&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;t3&lt;/td&gt;&lt;td&gt;Write(A) = 800&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;800&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;t4&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;Write(A) = 700&lt;/td&gt;&lt;td&gt;700&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;t5&lt;/td&gt;&lt;td&gt;Commit&lt;/td&gt;&lt;td&gt;Commit&lt;/td&gt;&lt;td&gt;&lt;b&gt;700 ❌&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;br&gt;Expected 500 → &lt;b&gt;NOT safe&lt;/b&gt; (not serializable)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;verticalAlign=top;spacing=10;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="220" width="480" height="300" as="geometry" />
+        </mxCell>
+
+        <mxCell id="safe" value="&lt;b style='font-size:14px;color:#82b366'&gt;SAFE schedule (exclusive locks) ✅&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;table border='1' cellpadding='4' style='border-collapse:collapse;width:100%'&gt;&lt;tr style='background:#eeeeee'&gt;&lt;th&gt;Time&lt;/th&gt;&lt;th&gt;T1&lt;/th&gt;&lt;th&gt;T2&lt;/th&gt;&lt;th&gt;A&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;t1&lt;/td&gt;&lt;td&gt;X-Lock(A)&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;1000&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;t2&lt;/td&gt;&lt;td&gt;Read(A) = 1000&lt;/td&gt;&lt;td&gt;X-Lock(A) → WAIT&lt;/td&gt;&lt;td&gt;1000&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;t3&lt;/td&gt;&lt;td&gt;Write(A) = 800&lt;/td&gt;&lt;td&gt;waiting…&lt;/td&gt;&lt;td&gt;800&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;t4&lt;/td&gt;&lt;td&gt;Commit + Unlock(A)&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;800&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;t5&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;X-Lock(A) granted&lt;/td&gt;&lt;td&gt;800&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;t6&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;Read(A) = 800&lt;/td&gt;&lt;td&gt;800&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;t7&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;Write(A) = 500&lt;/td&gt;&lt;td&gt;500&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;t8&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;Commit + Unlock(A)&lt;/td&gt;&lt;td&gt;&lt;b&gt;500 ✅&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;br&gt;Same result as T1 then T2 → &lt;b&gt;Safe&lt;/b&gt; (serializable)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;verticalAlign=top;spacing=10;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="560" y="220" width="480" height="340" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lock" value="&lt;b&gt;2) Locking mechanism&lt;/b&gt;&lt;br&gt;• &lt;b&gt;Exclusive lock (X)&lt;/b&gt; on an account before a transfer updates it → only one transaction can change it at a time.&lt;br&gt;• &lt;b&gt;Shared lock (S)&lt;/b&gt; to view a balance → many readers at once, but no writer.&lt;br&gt;• Keep locks until COMMIT (Strict 2PL).&lt;br&gt;• Lock accounts in the same order (e.g. smallest ID first) to avoid deadlocks." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;verticalAlign=top;spacing=10;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="590" width="480" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="compat" value="&lt;b&gt;Lock compatibility&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;table border='1' cellpadding='6' style='border-collapse:collapse;margin:auto'&gt;&lt;tr style='background:#eeeeee'&gt;&lt;th&gt;&lt;/th&gt;&lt;th&gt;S held&lt;/th&gt;&lt;th&gt;X held&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th&gt;Request S&lt;/th&gt;&lt;td&gt;✅ Yes&lt;/td&gt;&lt;td&gt;❌ Wait&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th&gt;Request X&lt;/th&gt;&lt;td&gt;❌ Wait&lt;/td&gt;&lt;td&gt;❌ Wait&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;verticalAlign=top;spacing=10;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="560" y="590" width="480" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pess" value="&lt;b&gt;3) Pessimistic locking ✅&lt;/b&gt;&lt;br&gt;Transfers on the same account conflict often, and money must never be wrong. Pessimistic locking &lt;b&gt;prevents&lt;/b&gt; the conflict up front (lock first, then update),&lt;br&gt;instead of detecting it at commit and retrying like optimistic locking. Optimistic is better only when conflicts are rare (e.g. just viewing balances)." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;verticalAlign=top;spacing=10;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="770" width="1000" height="90" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <diagram id="part2" name="Part 2 - Distributed DB">
+    <mxGraphModel dx="1200" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="t2" value="Part 2 – Distributed Database Planning" style="text;html=1;fontSize=24;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1000" height="40" as="geometry" />
+        </mxCell>
+
+        <mxCell id="glob" value="&lt;b&gt;Customers (global table)&lt;/b&gt;&lt;br&gt;customer_id, name, phone, address, &lt;b&gt;branch&lt;/b&gt;" style="shape=table;rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="365" y="80" width="350" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="hlbl" value="&lt;b&gt;1) Horizontal fragmentation by branch&lt;/b&gt; (split the rows)" style="text;html=1;fontSize=14;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="160" width="1000" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tun" value="&lt;b&gt;Tunis site&lt;/b&gt;&lt;br&gt;Customers_Tunis&lt;br&gt;&lt;i&gt;σ branch = 'Tunis' (Customers)&lt;/i&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=12;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="60" y="210" width="260" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="sou" value="&lt;b&gt;Sousse site&lt;/b&gt;&lt;br&gt;Customers_Sousse&lt;br&gt;&lt;i&gt;σ branch = 'Sousse' (Customers)&lt;/i&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=12;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="410" y="210" width="260" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="sfx" value="&lt;b&gt;Sfax site&lt;/b&gt;&lt;br&gt;Customers_Sfax&lt;br&gt;&lt;i&gt;σ branch = 'Sfax' (Customers)&lt;/i&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=12;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="760" y="210" width="260" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="glob" target="tun">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="glob" target="sou">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="glob" target="sfx">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="hnote" value="Each branch stores and manages only its own customers (fast local access).&lt;br&gt;Customers = Customers_Tunis ∪ Customers_Sousse ∪ Customers_Sfax (complete, no overlap)." style="text;html=1;fontSize=12;align=center;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="40" y="330" width="1000" height="40" as="geometry" />
+        </mxCell>
+
+        <mxCell id="vlbl" value="&lt;b&gt;2) Vertical fragmentation&lt;/b&gt; (split the columns): move login info to its own table" style="text;html=1;fontSize=14;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="390" width="1000" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="vc" value="&lt;b&gt;Customers&lt;/b&gt;&lt;br&gt;&lt;u&gt;customer_id&lt;/u&gt; (PK)&lt;br&gt;name, phone, address, branch" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="140" y="430" width="300" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="vl" value="&lt;b&gt;Customer_Login&lt;/b&gt; 🔒&lt;br&gt;&lt;u&gt;customer_id&lt;/u&gt; (PK, FK)&lt;br&gt;&lt;b&gt;email&lt;/b&gt;, password_hash" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="640" y="430" width="300" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="1 : 1 (join on customer_id)" style="html=1;endArrow=none;startArrow=none;fontSize=12;" edge="1" parent="1" source="vc" target="vl">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="vnote" value="Why: login data is sensitive and only used for authentication → it can be secured and accessed separately." style="text;html=1;fontSize=12;align=center;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="40" y="515" width="1000" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="rep" value="&lt;b style='font-size:14px'&gt;3) What to replicate across all branches?&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;table border='1' cellpadding='6' style='border-collapse:collapse;width:100%'&gt;&lt;tr style='background:#eeeeee'&gt;&lt;th&gt;Data&lt;/th&gt;&lt;th&gt;Replicate to all?&lt;/th&gt;&lt;th&gt;Why&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;Customer info&lt;/b&gt;&lt;/td&gt;&lt;td&gt;✅ Yes&lt;/td&gt;&lt;td&gt;Small, read often, rarely changes → any branch can identify and serve any customer. Cheap to keep in sync.&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;Account balances&lt;/b&gt;&lt;/td&gt;&lt;td&gt;❌ No – one primary copy at the home branch&lt;/td&gt;&lt;td&gt;Changes on every transfer → syncing 3 copies is slow and risks different balances in different branches.&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;Transaction history&lt;/b&gt;&lt;/td&gt;&lt;td&gt;❌ No – stored at the home branch (+ backup)&lt;/td&gt;&lt;td&gt;Very large and always growing; mostly read by the home branch only.&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;verticalAlign=top;spacing=10;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="570" width="1000" height="230" as="geometry" />
+        </mxCell>
+
+        <mxCell id="alloc" value="&lt;b&gt;4) Static allocation for transaction history ✅&lt;/b&gt;&lt;br&gt;Each transaction is stored at the branch that owns the account, decided once in advance. Customers mostly use their home branch, so the access pattern is predictable.&lt;br&gt;Static allocation is simple, has no cost of moving data around, and history (append-only) never needs to change location. Dynamic allocation is only useful if access patterns change often." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;verticalAlign=top;spacing=10;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="830" width="1000" height="110" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
